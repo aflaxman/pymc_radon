@@ -10,6 +10,7 @@ g = Uniform('gamma', [0,0], [100,100])
 
 s_a = Uniform('sigma_a', 0, 100)
 
+# priors
 a = {}
 for d in county_data:
     @stochastic(name='a_%s'%d['county'])
@@ -17,7 +18,6 @@ for d in county_data:
         return normal_like(value, g[0] + g[1]*u_j, s_a**-2.)
     a[d['county']] = a_j
 
-# priors
 b = Uniform('beta', 0, 100)
 
 s_y = Uniform('sigma_y', 0, 100)
