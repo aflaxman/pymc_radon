@@ -34,7 +34,7 @@ for d in household_data:
 mc = MCMC([g, s_a, a, b, s_y, y])
 mc.sample(10000, 2500, verbose=1)
 
-from matplotlib import *
+from pylab import *
 errorbar([d['u'] for d in county_data],
           [a[d['county']].stats()['mean'] for d in county_data],
           [a[d['county']].stats()['standard deviation'] for d in county_data],
