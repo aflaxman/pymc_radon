@@ -32,13 +32,13 @@ for d in household_data:
     y[d['household']] = y_i
 
 mc = MCMC([g, s_a, a, b, s_y, y])
-mc.sample(10000, 2500, verbose=1)
+mc.sample(1000)
 
 from pylab import *
 errorbar([d['u'] for d in county_data],
           [a[d['county']].stats()['mean'] for d in county_data],
           [a[d['county']].stats()['standard deviation'] for d in county_data],
           fmt='.', capsize=0)
-xlabel('regression intercept')
-ylabel('county-level uranium measure')
+xlabel('county-level uranium measure')
+ylabel('regression intercept')
 title('Reproduction of Figure 2')
