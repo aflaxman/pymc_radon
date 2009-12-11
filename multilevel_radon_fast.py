@@ -13,12 +13,12 @@ basement = basement.astype(bool)
 
 county_file = open('county.csv')
 county_names = [eval(x) for x in county_file.next().split(",")]
-county_data = array([[eval(x) for x in y.split(",")] for y in county_file], int)
+county_data = array([[eval(x) for x in y.split(",")] for y in county_file], float)
 county, u = transpose(county_data)
 
 # County-level hyperpriors
-gamma0 = Uniform('gamma0', 0, 100)
-gamma1 = Uniform('gamma1', 0, 100)
+gamma0 = Uniform('gamma0', -100, 100)
+gamma1 = Uniform('gamma1', -100, 100)
 sigma_a = Uniform('sigma_a', 0, 100)
 tau_a = Lambda('tau_a', lambda s=sigma_a: s**-2)
 
@@ -29,7 +29,7 @@ mu_a = Lambda('mu_a', lambda g0=gamma0, g1=gamma1: g0 + g1*u)
 alpha = Normal('alpha', mu=mu_a, tau=tau_a)
 
 # Household-level hyperpriors
-beta = Uniform('beta', 0, 100)
+beta = Uniform('beta', -100, 100)
 sigma_y = Uniform('sigma_y', 0, 100)
 tau_y = Lambda('tau_y', lambda s=sigma_y: s**-2)
 

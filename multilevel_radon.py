@@ -6,7 +6,7 @@ household_data = [d for d in csv.DictReader(open('household.csv'))]
 county_data = [d for d in csv.DictReader(open('county.csv'))]
 
 # hyper-priors
-g = Uniform('gamma', [0,0], [100,100])
+g = Uniform('gamma', [-100,-100], [100,100])
 
 s_a = Uniform('sigma_a', 0, 100)
 
@@ -18,7 +18,7 @@ for d in county_data:
         return normal_like(value, g[0] + g[1]*u_j, s_a**-2.)
     a[d['county']] = a_j
 
-b = Uniform('beta', 0, 100)
+b = Uniform('beta', -100, 100)
 
 s_y = Uniform('sigma_y', 0, 100)
 
@@ -32,7 +32,7 @@ for d in household_data:
     y[d['household']] = y_i
 
 mc = MCMC([g, s_a, a, b, s_y, y])
-mc.sample(1000)
+mc.sample(100000,50000,10, verbose=1)
 
 from pylab import *
 errorbar([d['u'] for d in county_data],
