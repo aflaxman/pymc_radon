@@ -38,30 +38,33 @@ def createCountyIndex(counties):
 
 index_c = createCountyIndex(counties)
 
-# Priors
-sigma_y = pymc.Uniform('sigma_y', lower=0, upper=100)
-tau_y = pymc.Lambda('tau_y', lambda s=sigma_y: s**-2)
+def model():
+    # Priors
+    sigma_y = pymc.Uniform('sigma_y', lower=0, upper=100)
+    tau_y = pymc.Lambda('tau_y', lambda s=sigma_y: s**-2)
 
-xi = pymc.Uniform('xi', lower=0, upper=100, value=np.zeros(K))
+    xi = pymc.Uniform('xi', lower=0, upper=100, value=np.zeros(K))
 
-mu_raw = pymc.Normal('mu_raw', mu=0., tau=0.0001,value=np.zeros(K))
-Tau_B_raw = pymc.Wishart('Tau_B_raw', df, Tau=np.diag(np.ones(K)))
-B_raw = pymc.MvNormal('B_raw', mu_raw, Tau_B_raw, value=np.zeros((J,K)))
+    mu_raw = pymc.Normal('mu_raw', mu=0., tau=0.0001,value=np.zeros(K))
+    Tau_B_raw = pymc.Wishart('Tau_B_raw', df, Tau=np.diag(np.ones(K)))
+    B_raw = pymc.MvNormal('B_raw', mu_raw, Tau_B_raw, value=np.zeros((J,K)))
 
-# Model
-@pymc.deterministic(plot=True)
-def B(xi=xi, B_raw=B_raw):
-    return xi * B_raw
+    # Model
+    @pymc.deterministic(plot=True)
+    def B(xi=xi, B_raw=B_raw):
+        return xi * B_raw
 
-@pymc.deterministic
-def mu(xi=xi, mu_raw=mu_raw):
-    return xi * mu_raw
+    @pymc.deterministic
+    def mu(xi=xi, mu_raw=mu_raw):
+        return xi * mu_raw
 
-@pymc.deterministic(plot=False)
-def y_hat(B=B, X=X, i=index_c):
-       return np.sum(B[i,] * X, axis=1)
+    @pymc.deterministic(plot=False)
+    def y_hat(B=B, X=X, i=index_c):
+           return np.sum(B[i,] * X, axis=1)
 
-# Likelihood
-@pymc.stochastic(observed=True)
-def y_i(value=y, mu=y_hat, tau=tau_y):
-    return pymc.normal_like(value,mu,tau)
+    # Likelihood
+    @pymc.stochastic(observed=True)
+    def y_i(value=y, mu=y_hat, tau=tau_y):
+        return pymc.normal_like(value,mu,tau)
+
+    return vars()

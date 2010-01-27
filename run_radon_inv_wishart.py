@@ -7,7 +7,7 @@ from pymc import Matplot
 from timeit import Timer
 
 def run(size='small'):
-    M = pymc.MCMC(radon_inv_wishart)
+    M = pymc.MCMC(radon_inv_wishart.model())
 
     if size == 'small':
         M.sample(iter=1e3, burn=500, thin=5)
