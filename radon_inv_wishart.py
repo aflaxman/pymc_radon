@@ -47,10 +47,7 @@ mu_raw = pymc.Normal('mu_raw', mu=0., tau=0.0001,value=np.zeros(K))
 Tau_B_raw = pymc.Wishart('Tau_B_raw', df, Tau=np.diag(np.ones(K)))
 B_raw_m = np.ones( (J,K) )
 
-# TODO: vectorize MvNormal if possible
-B_raw = []
-for i in range(J):
-    B_raw.append(pymc.MvNormal('B_raw_%i' % i, mu_raw, Tau_B_raw))
+B_raw = pymc.MvNormal('B_raw', mu_raw, Tau_B_raw, value=np.zeros((J,K)))
 
 # TODO: determine if the following 3 vars are necessary
 # @pymc.deterministic
