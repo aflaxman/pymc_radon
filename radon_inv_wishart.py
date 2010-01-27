@@ -43,31 +43,14 @@ sigma_y = pymc.Uniform('sigma_y', lower=0, upper=100)
 tau_y = pymc.Lambda('tau_y', lambda s=sigma_y: s**-2)
 
 xi = pymc.Uniform('xi', lower=0, upper=100, value=np.zeros(K))
+
 mu_raw = pymc.Normal('mu_raw', mu=0., tau=0.0001,value=np.zeros(K))
 Tau_B_raw = pymc.Wishart('Tau_B_raw', df, Tau=np.diag(np.ones(K)))
-B_raw_m = np.ones( (J,K) )
-
 B_raw = pymc.MvNormal('B_raw', mu_raw, Tau_B_raw, value=np.zeros((J,K)))
 
-# TODO: determine if the following 3 vars are necessary
-# @pymc.deterministic
-# def Sigma_B_raw(Tau_B_raw=Tau_B_raw):
-#     return np.linalg.inv(Tau_B_raw)
-
-# @pymc.deterministic
-# def rho_B(Sigma_B_raw=Sigma_B_raw):
-#     return Sigma_B_raw / np.sqrt(np.diag(Sigma_B_raw) * Sigma_B_raw)
-
-# @pymc.deterministic
-# def Sigma_B(xi=xi,Sigma_B_raw=Sigma_B_raw):
-#     return abs(xi) * np.sqrt(np.diag(Sigma_B_raw))
-
 @pymc.deterministic(plot=True)
-def B(xi=xi, B_raw=B_raw, B_raw_m=B_raw_m):
-    # FIXME: what is the effect of this loop?  perhaps it is not necessary
-    for i in range(J):
-        B_raw_m[i] = B_raw[i]
-    return xi * B_raw_m
+def B(xi=xi, B_raw=B_raw):
+    return xi * B_raw
 
 @pymc.deterministic
 def mu(xi=xi, mu_raw=mu_raw):
