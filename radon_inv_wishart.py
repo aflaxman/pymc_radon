@@ -48,6 +48,7 @@ mu_raw = pymc.Normal('mu_raw', mu=0., tau=0.0001,value=np.zeros(K))
 Tau_B_raw = pymc.Wishart('Tau_B_raw', df, Tau=np.diag(np.ones(K)))
 B_raw = pymc.MvNormal('B_raw', mu_raw, Tau_B_raw, value=np.zeros((J,K)))
 
+# Model
 @pymc.deterministic(plot=True)
 def B(xi=xi, B_raw=B_raw):
     return xi * B_raw
@@ -56,10 +57,9 @@ def B(xi=xi, B_raw=B_raw):
 def mu(xi=xi, mu_raw=mu_raw):
     return xi * mu_raw
 
-# Model
 @pymc.deterministic(plot=False)
-def y_hat(B=B):
-       return (B[index_c,] *X).sum(axis=1)  # TODO: try dot product instead of element-wise prod and sum
+def y_hat(B=B, X=X, i=index_c):
+       return np.sum(B[i,] * X, axis=1)
 
 # Likelihood
 @pymc.stochastic(observed=True)
